@@ -89,31 +89,31 @@ class PushNotification:
                     time.sleep(sleep_time)
 
      def push_meow(self, token, msg, title=None, url_link=None):
-        """
-        MeoW 消息推送（GET方式）
-        token: GitHub Secrets 配置的 MEOW_TOKEN
-        msg: 消息内容
-        title: 可选标题
-        url_link: 可选链接
-        """
-        attempts = 5
-        if title:
-            api_url = f"{self.meow_base_url}/{token}/{title}/{msg}"
-        else:
-            api_url = f"{self.meow_base_url}/{token}/{msg}"
-        if url_link:
-            api_url += f"?url={url_link}"
+         """
+         MeoW 消息推送（GET方式）
+         token: GitHub Secrets 配置的 MEOW_TOKEN
+         msg: 消息内容
+         title: 可选标题
+         url_link: 可选链接
+         """
+         attempts = 5
+         if title:
+             api_url = f"{self.meow_base_url}/{token}/{title}/{msg}"
+         else:
+             api_url = f"{self.meow_base_url}/{token}/{msg}"
+         if url_link:
+             api_url += f"?url={url_link}"
 
-        for attempt in range(attempts):
-            try:
-                response = requests.get(api_url, timeout=10, proxies=self.proxies)
-                response.raise_for_status()
-                logger.info("✅ MeoW响应: %s", response.text)
-                break
-            except requests.exceptions.RequestException as e:
-                logger.error("❌ MeoW推送失败: %s", e)
-                if attempt < attempts - 1:
-                    time.sleep(random.randint(180, 360))
+         for attempt in range(attempts):
+             try:
+                 response = requests.get(api_url, timeout=10, proxies=self.proxies)
+                 response.raise_for_status()
+                 logger.info("✅ MeoW响应: %s", response.text)
+                 break
+             except requests.exceptions.RequestException as e:
+                 logger.error("❌ MeoW推送失败: %s", e)
+                 if attempt < attempts - 1:
+                     time.sleep(random.randint(180, 360))
 
 
 """外部调用"""

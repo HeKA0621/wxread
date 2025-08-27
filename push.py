@@ -21,7 +21,7 @@ class PushNotification:
             'https': os.getenv('https_proxy')
         }
         self.wxpusher_simple_url = "https://wxpusher.zjiecode.com/api/send/message/{}/{}"
-        self.meow_url = "http://api.chuckfang.com
+        self.meow_url = "http://api.chuckfang.com"
 
     def push_pushplus(self, content, token):
         """PushPlus消息推送"""

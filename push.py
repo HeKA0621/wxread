@@ -15,13 +15,40 @@ class PushNotification:
         self.pushplus_url = "https://www.pushplus.plus/send"
         self.telegram_url = "https://api.telegram.org/bot{}/sendMessage"
         self.headers = {'Content-Type': 'application/json'}
-        # 从环境变量获取代理设置
         self.proxies = {
             'http': os.getenv('http_proxy'),
             'https': os.getenv('https_proxy')
         }
         self.wxpusher_simple_url = "https://wxpusher.zjiecode.com/api/send/message/{}/{}"
-        self.meow_url = "http://api.chuckfang.com"
+        self.meow_base_url = "http://api.chuckfang.com"
+
+    def push_meow(self, token, msg, title=None, url_link=None):
+        """
+        MeoW 消息推送（GET方式）
+        token: GitHub Secrets 配置的 MEOW_TOKEN
+        msg: 消息内容
+        title: 可选标题
+        url_link: 可选链接
+        """
+        attempts = 5
+        if title:
+            api_url = f"{self.meow_base_url}/{token}/{title}/{msg}"
+        else:
+            api_url = f"{self.meow_base_url}/{token}/{msg}"
+        if url_link:
+            api_url += f"?url={url_link}"
+
+        for attempt in range(attempts):
+            try:
+                response = requests.get(api_url, timeout=10, proxies=self.proxies)
+                response.raise_for_status()
+                logger.info("✅ MeoW响应: %s", response.text)
+                break
+            except requests.exceptions.RequestException as e:
+                logger.error("❌ MeoW推送失败: %s", e)
+                if attempt < attempts - 1:
+                    time.sleep(random.randint(180, 360))
+
 
     def push_pushplus(self, content, token):
         """PushPlus消息推送"""
@@ -88,32 +115,7 @@ class PushNotification:
                     logger.info("将在 %d 秒后重试...", sleep_time)
                     time.sleep(sleep_time)
 
-    def push_meow(self, token, msg, title=None, url_link=None):
-        """
-        MeoW 消息推送（GET方式）
-        token: GitHub Secrets 配置的 MEOW_TOKEN
-        msg: 消息内容
-        title: 可选标题
-        url_link: 可选链接
-        """
-        attempts = 5
-        if title:
-            api_url = f"{self.meow_base_url}/{token}/{title}/{msg}"
-        else:
-            api_url = f"{self.meow_base_url}/{token}/{msg}"
-        if url_link:
-            api_url += f"?url={url_link}"
-
-        for attempt in range(attempts):
-            try:
-                response = requests.get(api_url, timeout=10, proxies=self.proxies)
-                response.raise_for_status()
-                logger.info("✅ MeoW响应: %s", response.text)
-                break
-            except requests.exceptions.RequestException as e:
-                logger.error("❌ MeoW推送失败: %s", e)
-                if attempt < attempts - 1:
-                    time.sleep(random.randint(180, 360))
+    
 
 
 """外部调用"""

@@ -87,7 +87,7 @@ class PushNotification:
                     sleep_time = random.randint(180, 360)
                     logger.info("将在 %d 秒后重试...", sleep_time)
                     time.sleep(sleep_time)
-aaaa
+
     def push_meow(self, token, msg, title=None, url_link=None):
         """
         MeoW 消息推送（GET方式）
